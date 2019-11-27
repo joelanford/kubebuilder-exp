@@ -14,28 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package cli
 
 import (
-	"log"
+	"fmt"
 
-	golangv1 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/golang/v1"
-	golangv2 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/golang/v2"
-
-	"sigs.k8s.io/kubebuilder-exp/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	c, err := cli.New(
-		cli.WithPlugins(
-			&golangv1.Plugin{},
-			&golangv2.Plugin{},
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := c.Run(); err != nil {
-		log.Fatal(err)
+func (c CLI) newVendorUpdateCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "update",
+		Short: "Update vendor dependencies",
+		Long:  `Update vendor dependencies`,
+		Example: fmt.Sprintf(`Update the vendor dependencies:
+%s update vendor
+`, c.commandName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			dieIfNoProject()
+			fmt.Println("updating vendor dependencies")
+			return nil
+		},
 	}
 }

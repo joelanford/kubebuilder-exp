@@ -1,55 +1,55 @@
+/*
+Copyright 2019 The Kubernetes Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package plugin
 
-import (
-	"fmt"
-	"sort"
-	"sync"
-)
+import "github.com/spf13/pflag"
 
 type Plugin interface {
 	Version() string
 }
 
-var (
-	plugins map[string]Plugin
-	m       sync.RWMutex
-)
-
-func init() {
-	plugins = make(map[string]Plugin)
+type InjectsCommandName interface {
+	InjectCommandName(commandName string)
 }
 
-func Register(s Plugin) error {
-	m.Lock()
-	defer m.Unlock()
-	v := s.Version()
-	if _, ok := plugins[v]; ok {
-		return fmt.Errorf("scaffolder already registered for version %q", v)
-	}
-	plugins[v] = s
-	return nil
+type Deprecated interface {
+	DeprecationWarning() string
 }
 
-func Lookup(v string) (Plugin, bool) {
-	m.RLock()
-	defer m.RUnlock()
-	s, ok := plugins[v]
-	return s, ok
+type ProjectScaffolder interface {
+	Plugin
+	ProjectHelp() string
+	ProjectExample() string
+	BindProjectFlags(*pflag.FlagSet)
+	ScaffoldProject() error
 }
 
-func List() []Plugin {
-	m.RLock()
-	defer m.RUnlock()
+type APIScaffolder interface {
+	Plugin
+	APIHelp() string
+	APIExample() string
+	BindAPIFlags(*pflag.FlagSet)
+	ScaffoldAPI() error
+}
 
-	var keys []string
-	for k := range plugins {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	var list []Plugin
-	for _, k := range keys {
-		list = append(list, plugins[k])
-	}
-	return list
+type WebhookScaffolder interface {
+	Plugin
+	WebhookHelp() string
+	WebhookExample() string
+	BindWebhookFlags(flag *pflag.FlagSet)
+	ScaffoldWebhook() error
 }
