@@ -14,28 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package v1
 
-import (
-	"log"
+type Plugin struct {
+	// cli metadata
+	commandName string
 
-	golangv1 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/golang/v1"
-	golangv2 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/golang/v2"
+	// project flags
+	helmChart     string
+	helmChartRepo string
 
-	"sigs.k8s.io/kubebuilder-exp/pkg/cli"
-)
+	apiVersion string
+	kind       string
+}
 
-func main() {
-	c, err := cli.New(
-		cli.WithPlugins(
-			&golangv1.Plugin{},
-			&golangv2.Plugin{},
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := c.Run(); err != nil {
-		log.Fatal(err)
-	}
+func (_ Plugin) Version() string {
+	return "helm:1"
+}
+
+func (p *Plugin) InjectCommandName(name string) {
+	p.commandName = name
 }

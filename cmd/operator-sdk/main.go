@@ -1,39 +1,47 @@
+/*
+Copyright 2019 The Kubernetes Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package main
 
 import (
 	"fmt"
 	"log"
 
-	"sigs.k8s.io/kubebuilder-exp/cmd/kubebuilder/cli"
-
 	"github.com/spf13/cobra"
 
-	"sigs.k8s.io/kubebuilder-exp/pkg/plugin"
-
-	helmv1 "sigs.k8s.io/kubebuilder-exp/cmd/operator-sdk/helm/v1"
-	golangv1 "sigs.k8s.io/kubebuilder-exp/pkg/scaffold/golang/v1"
-	golangv2 "sigs.k8s.io/kubebuilder-exp/pkg/scaffold/golang/v2"
+	"sigs.k8s.io/kubebuilder-exp/pkg/cli"
+	golangv1 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/golang/v1"
+	golangv2 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/golang/v2"
+	helmv1 "sigs.k8s.io/kubebuilder-exp/pkg/plugin/helm/v1"
 )
 
-type commandHelp struct {
-	name string
-	desc string
-}
-
 func main() {
-	cli.CommandName = "operator-sdk"
-	plugin.Register(&golangv1.Scaffolder{})
-	plugin.Register(&golangv2.Scaffolder{})
-	plugin.Register(&helmv1.Scaffolder{})
-
-	c := cli.New()
-	err := c.AddCommand(
-		newOLMCmd(),
+	c, err := cli.New(
+		cli.WithCommandName("operator-sdk"),
+		cli.WithDefaultProjectVersion("2"),
+		cli.WithExtraCommands(newOLMCmd()),
+		cli.WithPlugins(
+			&golangv1.Plugin{},
+			&golangv2.Plugin{},
+			&helmv1.Plugin{},
+		),
 	)
 	if err != nil {
-		panic(fmt.Errorf("bug found in operator-sdk (%v); please file an issue!", err))
+		log.Fatal(err)
 	}
-
 	if err := c.Run(); err != nil {
 		log.Fatal(err)
 	}
