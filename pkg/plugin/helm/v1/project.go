@@ -53,7 +53,7 @@ func (p *Plugin) BindProjectFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&p.helmChart, "helm-chart", "", "Helm chart")
 	fs.StringVar(&p.helmChartRepo, "helm-chart-repo", "", "Helm chart repo")
 	fs.StringVar(&p.apiVersion, "apiVersion", "", "Kubernetes API version (e.g. example.com/v1alpha1)")
-	fs.StringVar(&p.apiVersion, "kind", "", "Kubernetes Kind (e.g. MyApp)")
+	fs.StringVar(&p.kind, "kind", "", "Kubernetes Kind (e.g. MyApp)")
 }
 
 func (p Plugin) ScaffoldProject() error {
