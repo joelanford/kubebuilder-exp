@@ -30,26 +30,26 @@ type Deprecated interface {
 	DeprecationWarning() string
 }
 
-type ProjectScaffolder interface {
+type InitPlugin interface {
 	Plugin
-	ProjectHelp() string
-	ProjectExample() string
-	BindProjectFlags(*pflag.FlagSet)
-	ScaffoldProject() error
+	InitDescription() string
+	InitExample() string
+	BindInitFlags(*pflag.FlagSet)
+	Init() error
 }
 
-type APIScaffolder interface {
+type CreateAPIPlugin interface {
 	Plugin
-	APIHelp() string
-	APIExample() string
-	BindAPIFlags(*pflag.FlagSet)
-	ScaffoldAPI() error
+	CreateAPIDescription() string
+	CreateAPIExample() string
+	BindCreateAPIFlags(*pflag.FlagSet)
+	CreateAPI() error
 }
 
-type WebhookScaffolder interface {
+type CreateWebhookPlugin interface {
 	Plugin
-	WebhookHelp() string
-	WebhookExample() string
-	BindWebhookFlags(flag *pflag.FlagSet)
-	ScaffoldWebhook() error
+	CreateWebhookDescription() string
+	CreateWebhookExample() string
+	BindCreateWebhookFlags(flag *pflag.FlagSet)
+	CreateWebhook() error
 }

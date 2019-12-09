@@ -24,9 +24,9 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var _ plugin.ProjectScaffolder = &Plugin{}
+var _ plugin.InitPlugin = &Plugin{}
 
-func (_ Plugin) ProjectHelp() string {
+func (_ Plugin) InitDescription() string {
 	return `Initialize a new project including vendor/ directory and Go package directories.
 
 Writes the following files:
@@ -43,13 +43,13 @@ project will prompt the user to run 'dep ensure' after writing the project files
 `
 }
 
-func (p Plugin) ProjectExample() string {
+func (p Plugin) InitExample() string {
 	return fmt.Sprintf(`  # Scaffold a project using the apache2 license with "The Kubernetes authors" as owners
   %s init --project-version=2 --domain example.org --license apache2 --owner "The Kubernetes authors"
 `, p.commandName)
 }
 
-func (p *Plugin) BindProjectFlags(fs *pflag.FlagSet) {
+func (p *Plugin) BindInitFlags(fs *pflag.FlagSet) {
 	fs.BoolVar(&p.skipGoVersionCheck, "skip-go-version-check", false, "if specified, skip checking the Go version")
 
 	// dependency args
@@ -66,7 +66,7 @@ func (p *Plugin) BindProjectFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&p.project.Domain, "domain", "my.domain", "domain for groups")
 }
 
-func (p Plugin) ScaffoldProject() error {
+func (p Plugin) Init() error {
 	fmt.Printf("Scaffolding project for project version %q\n", p.Version())
 	return nil
 }

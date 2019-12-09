@@ -24,9 +24,9 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var _ plugin.ProjectScaffolder = &Plugin{}
+var _ plugin.InitPlugin = &Plugin{}
 
-func (_ Plugin) ProjectHelp() string {
+func (_ Plugin) InitDescription() string {
 	return `Initialize a new project based on a Helm chart.
 
 Writes the following files:
@@ -40,7 +40,7 @@ Writes the following files:
 `
 }
 
-func (p Plugin) ProjectExample() string {
+func (p Plugin) InitExample() string {
 	return fmt.Sprintf(`  # Scaffold a project using a sample chart
   %s init --project-version=helm:1 --api-version=example.com/v1alpha1 --kind=MyApp
 
@@ -49,14 +49,14 @@ func (p Plugin) ProjectExample() string {
 `, p.commandName, p.commandName)
 }
 
-func (p *Plugin) BindProjectFlags(fs *pflag.FlagSet) {
+func (p *Plugin) BindInitFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&p.helmChart, "helm-chart", "", "Helm chart")
 	fs.StringVar(&p.helmChartRepo, "helm-chart-repo", "", "Helm chart repo")
 	fs.StringVar(&p.apiVersion, "apiVersion", "", "Kubernetes API version (e.g. example.com/v1alpha1)")
 	fs.StringVar(&p.kind, "kind", "", "Kubernetes Kind (e.g. MyApp)")
 }
 
-func (p Plugin) ScaffoldProject() error {
+func (p Plugin) Init() error {
 	fmt.Printf("Scaffolding project for project version %q\n", p.Version())
 	return nil
 }

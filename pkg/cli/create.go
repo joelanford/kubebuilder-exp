@@ -74,18 +74,18 @@ func (c CLI) bindCreateAPIPlugin(cmd *cobra.Command, projectVersion string) {
 		cmdErr(cmd, err)
 		return
 	}
-	as, ok := p.(plugin.APIScaffolder)
+	as, ok := p.(plugin.CreateAPIPlugin)
 	if !ok {
 		err := fmt.Errorf("plugin for project version %q does not support API creation", projectVersion)
 		cmdErr(cmd, err)
 		return
 	}
 
-	as.BindAPIFlags(cmd.Flags())
-	cmd.Long = as.APIHelp()
-	cmd.Example = as.APIExample()
+	as.BindCreateAPIFlags(cmd.Flags())
+	cmd.Long = as.CreateAPIDescription()
+	cmd.Example = as.CreateAPIExample()
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if err := as.ScaffoldAPI(); err != nil {
+		if err := as.CreateAPI(); err != nil {
 			return fmt.Errorf("failed to create api for project with version %q: %v", projectVersion, err)
 		}
 		return nil
@@ -123,18 +123,18 @@ func (c CLI) bindCreateWebhookPlugin(cmd *cobra.Command, projectVersion string) 
 		cmdErr(cmd, err)
 		return
 	}
-	ws, ok := p.(plugin.WebhookScaffolder)
+	ws, ok := p.(plugin.CreateWebhookPlugin)
 	if !ok {
 		err := fmt.Errorf("plugin for project version %q does not support webhook creation", projectVersion)
 		cmdErr(cmd, err)
 		return
 	}
 
-	ws.BindWebhookFlags(cmd.Flags())
-	cmd.Long = ws.WebhookHelp()
-	cmd.Example = ws.WebhookExample()
+	ws.BindCreateWebhookFlags(cmd.Flags())
+	cmd.Long = ws.CreateWebhookDescription()
+	cmd.Example = ws.CreateWebhookExample()
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if err := ws.ScaffoldWebhook(); err != nil {
+		if err := ws.CreateWebhook(); err != nil {
 			return fmt.Errorf("failed to create webhook for project with version %q: %v", projectVersion, err)
 		}
 		return nil

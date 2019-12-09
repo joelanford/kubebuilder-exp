@@ -79,11 +79,10 @@ func (c CLI) getAvailableProjectVersions() (projectVersions []string) {
 		if _, ok := p.(plugin.Deprecated); ok {
 			continue
 		}
-		if _, ok := p.(plugin.ProjectScaffolder); !ok {
+		if _, ok := p.(plugin.InitPlugin); !ok {
 			continue
 		}
 		projectVersions = append(projectVersions, strconv.Quote(p.Version()))
-
 	}
 	return projectVersions
 }
@@ -93,19 +92,19 @@ func (c CLI) bindInitPlugin(cmd *cobra.Command, projectVersion string) {
 	if !ok {
 		log.Fatal(fmt.Errorf("unknown project version %q", projectVersion))
 	}
-	ps, ok := p.(plugin.ProjectScaffolder)
+	ps, ok := p.(plugin.InitPlugin)
 	if !ok {
 		log.Fatal(fmt.Errorf("plugin for project version %q does not support project initialization", projectVersion))
 	}
 
-	ps.BindProjectFlags(cmd.Flags())
-	cmd.Long = ps.ProjectHelp()
-	cmd.Example = ps.ProjectExample()
+	ps.BindInitFlags(cmd.Flags())
+	cmd.Long = ps.InitDescription()
+	cmd.Example = ps.InitExample()
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if projutil.IsExistingProject() {
 			return fmt.Errorf("failed to initialize project because project is already initialized")
 		}
-		if err := ps.ScaffoldProject(); err != nil {
+		if err := ps.Init(); err != nil {
 			return fmt.Errorf("failed to initialize project with version %q: %v", projectVersion, err)
 		}
 		return nil

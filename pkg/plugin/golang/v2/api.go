@@ -25,9 +25,9 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var _ plugin.APIScaffolder = &Plugin{}
+var _ plugin.CreateAPIPlugin = &Plugin{}
 
-func (_ Plugin) APIHelp() string {
+func (_ Plugin) CreateAPIDescription() string {
 	return `Scaffold a Kubernetes API by creating a Resource definition and / or a Controller.
 
 create resource will prompt the user for if it should scaffold the Resource and / or Controller.  To only
@@ -38,7 +38,7 @@ After the scaffold is written, api will run make on the project.
 `
 }
 
-func (p Plugin) APIExample() string {
+func (p Plugin) CreateAPIExample() string {
 	return fmt.Sprintf(`  # Create a frigates API with Group: ship, Version: v1beta1 and Kind: Frigate
   %s create api --group ship --version v1beta1 --kind Frigate
   
@@ -59,7 +59,7 @@ func (p Plugin) APIExample() string {
 `, p.commandName)
 }
 
-func (p *Plugin) BindAPIFlags(fs *pflag.FlagSet) {
+func (p *Plugin) BindCreateAPIFlags(fs *pflag.FlagSet) {
 	fs.BoolVar(&p.runMake, "make", true,
 		"if true, run make after generating files")
 	//fs.BoolVar(&p.apiScaffolder.DoResource, "resource", true,
@@ -75,7 +75,7 @@ func (p *Plugin) BindAPIFlags(fs *pflag.FlagSet) {
 	//p.apiScaffolder.Resource = resourceForFlags(fs)
 }
 
-func (p Plugin) ScaffoldAPI() error {
+func (p Plugin) CreateAPI() error {
 	fmt.Printf("Scaffolding API for project version %q\n", p.Version())
 	return nil
 }
